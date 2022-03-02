@@ -15,16 +15,18 @@ import SubMenuContainer from './components/SubMenuContainer'
 import MenuCard from './components/MenuCard'
 
 import { MenuItems, Items } from './components/Data.js'
-import burger from '../src/assets/burger.png'
 import delivery from '../src/assets/delivery.png'
 import ItemCard from './components/ItemCard'
 import DebitCard from './components/DebitCard'
 import CartItem from './components/CartItem'
 
+import { useStateValue } from './components/StateProvider'
+
 function App() {
     const [isMainData, setIsMainData] = useState(
         Items.filter((element) => element.itemId === 'buger01')
     )
+    const [{ cart }] = useStateValue()
 
     useEffect(() => {
         const menuLi = document.querySelectorAll('#menu li')
@@ -43,7 +45,7 @@ function App() {
 
         const menuCards = document.querySelectorAll('.rowMenuCard')
         menuCards.forEach((n) => n.addEventListener('click', setMenuCardActive))
-    }, [isMainData])
+    }, [isMainData, cart])
 
     // filter items
     const setData = (itemId) => {
@@ -116,26 +118,35 @@ function App() {
                         </div>
                     </div>
 
-                    <div className="cartCheckouContainer">
-                        <SubMenuContainer name={'Cart Items'} />
-                        <div className="cartContainer">
-                            <div>
-                                <CartItem
-                                    name={'Burger Bistro'}
-                                    imgSrc={burger}
-                                    qty={'4'}
-                                    price={'7.95'}
-                                />
+                    {!cart ? (
+                        <div></div>
+                    ) : (
+                        <div className="cartCheckouContainer">
+                            <SubMenuContainer name={'Cart Items'} />
+                            <div className="cartContainer">
+                                <div className="cartItems">
+                                    {cart &&
+                                        cart.map((item) => (
+                                            <CartItem
+                                                key={item.isCart.id}
+                                                Id={item.isCart.id}
+                                                itemId={item.isCart.itemId}
+                                                name={item.isCart.name}
+                                                imgSrc={item.isCart.imgSrc}
+                                                price={item.isCart.price}
+                                            />
+                                        ))}
+                                </div>
                             </div>
+                            <div className="totalSection">
+                                <h3>Total</h3>
+                                <p>
+                                    <span>$ </span>42.00
+                                </p>
+                            </div>
+                            <button className="checkOut">Check Out</button>
                         </div>
-                        <div className="totalSection">
-                            <h3>Total</h3>
-                            <p>
-                                <span>$ </span>42.00
-                            </p>
-                        </div>
-                        <button className="checkOut">Check Out</button>
-                    </div>
+                    )}
                 </div>
             </main>
 
